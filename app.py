@@ -203,32 +203,24 @@ elif menu == "Sales Analysis":
                            color_discrete_map={"Amount": "purple", "Username": "blue"})
         st.plotly_chart(fig_5hour)
 
+        # --- BEST-SELLING TIME ---
+        best_hour = df_filtered.groupby('Hour').agg({'Amount': 'sum', 'Username': 'count'}).reset_index()
+        best_hour.columns = ['Hour', 'Total Sales', 'Total Transactions']
+
+        # Cari jam dengan transaksi terbanyak
+        best_hour_top = best_hour.loc[best_hour['Total Transactions'].idxmax()]
+
+        # Tampilkan Best-Selling Time
+        st.subheader("⏰ Best-Selling Time")
+        col1, col2 = st.columns(2)
+        col1.metric("Best Hour", f"{best_hour_top['Hour']}:00 - {best_hour_top['Hour']+1}:00")
+        col2.metric("Transactions at Best Hour", f"{best_hour_top['Total Transactions']}")
+
+        # Tampilkan grafik transaksi per jam
+        fig_best_hour = px.bar(best_hour, x='Hour', y='Total Transactions', 
+                               title="⏰ Transactions Per Hour", color='Total Transactions', 
+                               color_continuous_scale='Blues')
+        st.plotly_chart(fig_best_hour) 
+
     else:
         st.warning("Please select a valid date range.")
-
-       # --- BEST-SELLING TIME ---
-
-    # Hitung total transaksi dan total sales per jam
-    best_hour = data.groupby('Hour').agg({'Amount': 'sum', 'Username': 'count'}).reset_index()
-    best_hour.columns = ['Hour', 'Total Sales', 'Total Transactions']
-
-    # Cari jam dengan transaksi terbanyak
-    best_hour_top = best_hour.loc[best_hour['Total Transactions'].idxmax()]
-
-    # Tampilkan di Dashboard
-    st.subheader("⏰ Best-Selling Time")
-    col1, col2 = st.columns(2)
-    col1.metric("Best Hour", f"{best_hour_top['Hour']}:00 - {best_hour_top['Hour']+1}:00")
-    col2.metric("Transactions at Best Hour", f"{best_hour_top['Total Transactions']}")
-
-    # Tampilkan grafik transaksi per jam
-    fig_best_hour = px.bar(best_hour, x='Hour', y='Total Transactions', 
-                       title="⏰ Transactions Per Hour", color='Total Transactions', 
-                       color_continuous_scale='Blues')
-    st.plotly_chart(fig_best_hour) 
-
-
-  
-
-
-
